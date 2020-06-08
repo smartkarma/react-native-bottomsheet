@@ -26,6 +26,7 @@ public class RNBottomSheet extends ReactContextBaseJavaModule {
     private boolean isOpened;
     private Callback shareSuccessCallback;
     private Callback shareFailureCallback;
+    private BottomSheet currentDialog;
 
     public RNBottomSheet(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -84,10 +85,12 @@ public class RNBottomSheet extends ReactContextBaseJavaModule {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 RNBottomSheet.this.isOpened = false;
+                currentDialog = null;
             }
         });
 
-        builder.build().show();
+        currentDialog = builder.build();
+        currentDialog.show();
     }
 
     @ReactMethod
@@ -123,6 +126,13 @@ public class RNBottomSheet extends ReactContextBaseJavaModule {
             this.getCurrentActivity().startActivity(Intent.createChooser(shareIntent, "Share To"));
         } else {
             failureCallback.invoke(new Exception("The app you want to share is not installed."));
+        }
+    }
+
+    @ReactMethod
+    public void dismiss() {
+        if (currentDialog != null) {
+            currentDialog.dismiss();
         }
     }
 
